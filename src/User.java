@@ -2,7 +2,8 @@ import java.io.Serializable;
 
 public class User implements Serializable {
     private Long id;
-    private String login, passwod, role;
+    private String login, password;
+    private Role role;
 
     public Long getId() {
         return id;
@@ -11,15 +12,15 @@ public class User implements Serializable {
     public User() {
     }
 
-    public User(String login, String passwod) {
+    public User(String login, String password) {
         this.login = login;
-        this.passwod = passwod;
+        this.password = password;
     }
 
-    public User(Long id, String login, String passwod, String role) {
+    public User(Long id, String login, String password, Role role) {
         this.id = id;
         this.login = login;
-        this.passwod = passwod;
+        this.password = password;
         this.role = role;
     }
 
@@ -35,19 +36,19 @@ public class User implements Serializable {
         this.login = login;
     }
 
-    public String getPasswod() {
-        return passwod;
+    public String getPassword() {
+        return password;
     }
 
-    public void setPasswod(String passwod) {
-        this.passwod = passwod;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
-    public String getRole() {
+    public Role getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(Role role) {
         this.role = role;
     }
 
@@ -56,8 +57,8 @@ public class User implements Serializable {
         return "User{" +
                 "id=" + id +
                 ", login='" + login + '\'' +
-                ", passwod='" + passwod + '\'' +
-                ", role='" + role + '\'' +
+                ", password='" + password + '\'' +
+                ", role=" + role +
                 '}';
     }
 }

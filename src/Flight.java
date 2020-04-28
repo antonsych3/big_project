@@ -1,7 +1,9 @@
 import java.io.Serializable;
 
 public class Flight implements Serializable {
-    private Long id, aircraftId, departureCityId, arrivalCityId;
+    private Long id;
+    private Aircraft aircraft;
+    private City departureCity, arrivalCity;
     private String departureTime;
     private int economPrice, businessPrice;
 
@@ -12,11 +14,13 @@ public class Flight implements Serializable {
         this.id = id;
     }
 
-    public Flight(Long id, Long aircraftId, Long departureCityId, Long arrivalCityId, String departureTime, int economPrice, int businessPrice) {
+    public Flight(Long id, Aircraft aircraft,
+                  City departureCity, City arrivalCity, String departureTime,
+                  int economPrice, int businessPrice) {
         this.id = id;
-        this.aircraftId = aircraftId;
-        this.departureCityId = departureCityId;
-        this.arrivalCityId = arrivalCityId;
+        this.aircraft = aircraft;
+        this.departureCity = departureCity;
+        this.arrivalCity = arrivalCity;
         this.departureTime = departureTime;
         this.economPrice = economPrice;
         this.businessPrice = businessPrice;
@@ -26,28 +30,32 @@ public class Flight implements Serializable {
         return id;
     }
 
-    public Long getAircraftId() {
-        return aircraftId;
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public void setAircraftId(Long aircraftId) {
-        this.aircraftId = aircraftId;
+    public Aircraft getAircraft() {
+        return aircraft;
     }
 
-    public Long getDepartureCityId() {
-        return departureCityId;
+    public void setAircraft(Aircraft aircraft) {
+        this.aircraft = aircraft;
     }
 
-    public void setDepartureCityId(Long departureCityId) {
-        this.departureCityId = departureCityId;
+    public City getDepartureCity() {
+        return departureCity;
     }
 
-    public Long getArrivalCityId() {
-        return arrivalCityId;
+    public void setDepartureCity(City departureCity) {
+        this.departureCity = departureCity;
     }
 
-    public void setArrivalCityId(Long arrivalCityId) {
-        this.arrivalCityId = arrivalCityId;
+    public City getArrivalCity() {
+        return arrivalCity;
+    }
+
+    public void setArrivalCityId(City arrivalCity) {
+        this.arrivalCity = arrivalCity;
     }
 
     public String getDepartureTime() {
@@ -76,14 +84,9 @@ public class Flight implements Serializable {
 
     @Override
     public String toString() {
-        return "Flight{" +
-                "id=" + id +
-                ", aircraftId=" + aircraftId +
-                ", departureCityId=" + departureCityId +
-                ", arrivalCityId=" + arrivalCityId +
-                ", departureTime='" + departureTime + '\'' +
-                ", economPrice=" + economPrice +
-                ", businessPrice=" + businessPrice +
-                '}';
+        return id +
+                " - " + aircraft.getName() +
+                " - " + departureCity.getName() +
+                " - " + arrivalCity.getName();
     }
 }

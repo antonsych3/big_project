@@ -57,14 +57,12 @@ public class Aircraft implements Serializable {
         return id;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     @Override
     public String toString() {
-        return "Aircraft{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", model='" + model + '\'' +
-                ", businessCapacity=" + businessCapacity +
-                ", economCapacity=" + economCapacity +
-                '}';
+        return id + " - " + name + " - " + model;
     }
 }

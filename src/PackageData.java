@@ -2,20 +2,27 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 public class PackageData implements Serializable {
-    private String dataType, operationType;
+    private Operation operation;
+    private User user;
+    private ArrayList allAtList;
     private Aircraft aircraft;
     private City city;
     private Flight flight;
-    private  Ticket ticket;
-    private User user;
-    private ArrayList elemOfAirport;
+    private Ticket ticket;
 
     public PackageData() {
     }
 
-    public PackageData(String dataType, String operationType) {
-        this.dataType = dataType;
-        this.operationType = operationType;
+    public PackageData(Operation operation) {
+        this.operation = operation;
+    }
+
+    public Operation getOperation() {
+        return operation;
+    }
+
+    public void setOperation(Operation operation) {
+        this.operation = operation;
     }
 
     public User getUser() {
@@ -26,28 +33,12 @@ public class PackageData implements Serializable {
         this.user = user;
     }
 
-    public String getDataType() {
-        return dataType;
+    public ArrayList getAllAtList() {
+        return allAtList;
     }
 
-    public void setDataType(String dataType) {
-        this.dataType = dataType;
-    }
-
-    public ArrayList getElemOfAirport() {
-        return elemOfAirport;
-    }
-
-    public void setElemOfAirport(ArrayList elemOfAirport) {
-        this.elemOfAirport = elemOfAirport;
-    }
-
-    public String getOperationType() {
-        return operationType;
-    }
-
-    public void setOperationType(String operationType) {
-        this.operationType = operationType;
+    public void setAllAtList(ArrayList allAtList) {
+        this.allAtList = allAtList;
     }
 
     public Aircraft getAircraft() {
@@ -80,5 +71,18 @@ public class PackageData implements Serializable {
 
     public void setTicket(Ticket ticket) {
         this.ticket = ticket;
+    }
+
+    @Override
+    public String toString() {
+        return "PackageData{" +
+                "operationType=" + operation +
+                ", user=" + user +
+                ", allAtList=" + allAtList +
+                ", aircraft=" + aircraft +
+                ", city=" + city +
+                ", flight=" + flight +
+                ", ticket=" + ticket +
+                '}';
     }
 }

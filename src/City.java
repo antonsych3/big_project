@@ -1,9 +1,8 @@
 import java.io.Serializable;
 
 public class City implements Serializable {
-    private static final long serialVersionUID = 8799585939008193594L;
     private Long id;
-    private String name, country, shortName;
+    private String name = "*", country = "*", shortName = "*";
 
     public City() {
     }
@@ -18,8 +17,6 @@ public class City implements Serializable {
         this.country = country;
         this.shortName = shortName;
     }
-
-
 
     public Long getId() {
         return id;
@@ -51,12 +48,7 @@ public class City implements Serializable {
 
     @Override
     public String toString() {
-        return "City{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", country='" + country + '\'' +
-                ", shortName='" + shortName + '\'' +
-                '}';
+        return name + ", country: " + country + ", shortName: " + shortName;
     }
 }
 

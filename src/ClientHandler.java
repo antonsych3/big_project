@@ -1,101 +1,100 @@
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.Socket;
+import java.io.*;
+import java.net.*;
 import java.sql.SQLException;
 
 public class ClientHandler extends Thread {
     private Socket socket;
 
-    public ClientHandler(Socket socket) {
+    public ClientHandler (Socket socket){
         this.socket = socket;
     }
 
-    public void run() {
-        try {
-            DBManager manager = new DBManager();
-            manager.connect();
-            ObjectOutputStream outStream = new ObjectOutputStream(socket.getOutputStream());
-            ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream());
-            PackageData pd, response = new PackageData();
-            User user;
+    public void run(){
+        try(ObjectOutputStream outStream = new ObjectOutputStream(socket.getOutputStream());
+            ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream())) {
+            PackageData packageData;
 
-            while ((pd = (PackageData)inputStream.readObject()) != null) {
+            while ((packageData = (PackageData)inputStream.readObject())!=null){
                 outStream.reset();
-                response.setOperationType("false");
-                user = manager.getUserByLogin(pd.getUser());
+                if(packageData.getOperation().equals(Operation.AUTHORIZATION)){
+                    User userFromDB = DBManager.getUserByLoginAndPassword(packageData.getUser());
+                    PackageData pdWithUser = new PackageData();
+                    pdWithUser.setUser(userFromDB);
+                    outStream.writeObject(pdWithUser);
 
-                if(pd.getUser().getPasswod().equals(user.getPasswod())){
-                    pd.setUser(user);
-                    outStream.writeObject(pd);
+                }else if (packageData.getOperation().equals(Operation.LIST_AIRCRAFTS)){
+                    listFromDBToClient(Operation.LIST_AIRCRAFTS, outStream);
 
-                    while ((pd = (PackageData)inputStream.readObject()) != null) {
-                        outStream.reset();
-                        if (pd.getDataType().equals("Aircraft")){
-                            if(pd.getOperationType().equals("add")){
-                                manager.addAircraft(pd.getAircraft());
-                            }else if (pd.getOperationType().equals("change")){
-                                manager.changeAircraft(pd.getAircraft());
-                            }else if(pd.getOperationType().equals("delete")){
-                                manager.deleteAircraft(pd.getAircraft());
-                            }else if(pd.getOperationType().equals("getAll")){
-                                pd.setElemOfAirport(manager.getAllAircrafts());
-                                outStream.writeObject(pd);
-                            }
+                }else if (packageData.getOperation().equals(Operation.LIST_CITIES)) {
+                    listFromDBToClient(Operation.LIST_CITIES, outStream);
 
-                        } else if (pd.getDataType().equals("City")){
-                            if(pd.getOperationType().equals("add")){
-                                manager.addCity(pd.getCity());
-                                response.setOperationType("added");
-                                outStream.writeObject(response);
-                            }else if (pd.getOperationType().equals("change")){
-                                manager.changeCity(pd.getCity());
-                            }else if(pd.getOperationType().equals("delete")){
-                                manager.deleteCity(pd.getCity());
-                                response.setOperationType("deleted " + pd.getCity().getId());
-                                outStream.writeObject(response);
-                            }else if(pd.getOperationType().equals("getAll")){
-                                pd.setElemOfAirport(manager.getAllCities());
-                                outStream.writeObject(pd);
-                            }
+                }else if (packageData.getOperation().equals(Operation.LIST_FLIGHTS)) {
+                    listFromDBToClient(Operation.LIST_FLIGHTS, outStream);
 
-                        }else if (pd.getDataType().equals("Flight")){
-                            if(pd.getOperationType().equals("add")){
-                                manager.addFlight(pd.getFlight());
-                            }else if (pd.getOperationType().equals("change")){
-                                manager.changeFlight(pd.getFlight());
-                            }else if(pd.getOperationType().equals("delete")){
-                                manager.deleteFlight(pd.getFlight());
-                            }else if(pd.getOperationType().equals("getAll")){
-                                pd.setElemOfAirport(manager.getAllFlights());
-                                outStream.writeObject(pd);
-                            }
+                }else if (packageData.getOperation().equals(Operation.LIST_TICKETS)) {
+                    listFromDBToClient(Operation.LIST_TICKETS, outStream);
 
-                        }else if (pd.getDataType().equals("Ticket")){
-                            if(pd.getOperationType().equals("add")){
-                                manager.addTicket(pd.getTicket());
-                            }else if (pd.getOperationType().equals("change")){
-                                manager.changeTicket(pd.getTicket());
-                            }else if(pd.getOperationType().equals("delete")){
-                                manager.deleteTicket(pd.getTicket());
-                            }else if(pd.getOperationType().equals("getAll")){
-                                pd.setElemOfAirport(manager.getAllTickets());
-                                outStream.writeObject(pd);
-                            }
-                        }
-                    }
+                }else if (packageData.getOperation().equals(Operation.ADD_AIRCRAFT)){
+                    responseFromDB(DBManager.addAircraft(packageData.getAircraft()), outStream);
 
-                }else{
-                    user.setRole("wrong");
-                    pd.setUser(user);
-                    outStream.writeObject(pd);
+                }else if (packageData.getOperation().equals(Operation.CHANGE_AIRCRAFT)){
+                    responseFromDB(DBManager.changeAircraft(packageData.getAircraft()), outStream);
+
+                }else if (packageData.getOperation().equals(Operation.DELETE_AIRCRAFT)){
+                    responseFromDB(DBManager.deleteAircraft(packageData.getAircraft()), outStream);
+
+                }else if (packageData.getOperation().equals(Operation.ADD_CITY)){
+                    responseFromDB(DBManager.addCity(packageData.getCity()), outStream);
+
+                }else if (packageData.getOperation().equals(Operation.CHANGE_CITY)){
+                    responseFromDB(DBManager.changeCity(packageData.getCity()), outStream);
+
+                }else if (packageData.getOperation().equals(Operation.DELETE_CITY)){
+                    responseFromDB(DBManager.deleteCity(packageData.getCity()), outStream);
+
+                }else if (packageData.getOperation().equals(Operation.ADD_FLIGHT)){
+                    responseFromDB(DBManager.addFlight(packageData.getFlight()), outStream);
+
+                }else if (packageData.getOperation().equals(Operation.CHANGE_FLIGHT)){
+                    responseFromDB(DBManager.changeFlight(packageData.getFlight()), outStream);
+
+                }else if (packageData.getOperation().equals(Operation.DELETE_FLIGHT)){
+                    responseFromDB(DBManager.deleteFlight(packageData.getFlight()), outStream);
+
+                }else if (packageData.getOperation().equals(Operation.ADD_TICKET)){
+                    responseFromDB(DBManager.addTicket(packageData.getTicket()), outStream);
+
+                }else if (packageData.getOperation().equals(Operation.CHANGE_TICKET)){
+                    responseFromDB(DBManager.changeTicket(packageData.getTicket()), outStream);
+
+                }else if (packageData.getOperation().equals(Operation.DELETE_TICKET)){
+                    responseFromDB(DBManager.deleteTicket(packageData.getTicket()), outStream);
                 }
+
             }
-            inputStream.close();
-            outStream.close();
-            socket.close();
         } catch (IOException | ClassNotFoundException | SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void responseFromDB(boolean bool, ObjectOutputStream out) throws IOException {
+        if(bool){
+            PackageData response = new PackageData(Operation.OK);
+            out.writeObject(response);
+        }else out.writeObject(new PackageData());
+    }
+
+    public static void listFromDBToClient(Operation operation, ObjectOutputStream out) throws IOException, SQLException {
+        PackageData listPD = new PackageData();
+        if(operation.equals(Operation.LIST_AIRCRAFTS))
+            listPD.setAllAtList(DBManager.getAllAircrafts());
+        else if(operation.equals(Operation.LIST_CITIES))
+            listPD.setAllAtList(DBManager.getAllCities());
+        else if(operation.equals(Operation.LIST_FLIGHTS))
+            listPD.setAllAtList(DBManager.getAllFlights());
+        else if(operation.equals(Operation.LIST_TICKETS))
+            listPD.setAllAtList(DBManager.getAllTickets());
+        out.writeObject(listPD);
     }
 }

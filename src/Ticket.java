@@ -1,7 +1,8 @@
 import java.io.Serializable;
 
 public class Ticket implements Serializable {
-    private Long id, flightId;
+    private Long id;
+    private Flight flight;
     private String name, surname, passportNumber, type;
 
     public Ticket() {
@@ -11,9 +12,10 @@ public class Ticket implements Serializable {
         this.id = id;
     }
 
-    public Ticket(Long id, Long flightId, String name, String surname, String passportNumber, String type) {
+    public Ticket(Long id, Flight flight, String name,
+                  String surname, String passportNumber, String type) {
         this.id = id;
-        this.flightId = flightId;
+        this.flight = flight;
         this.name = name;
         this.surname = surname;
         this.passportNumber = passportNumber;
@@ -24,12 +26,16 @@ public class Ticket implements Serializable {
         return id;
     }
 
-    public Long getFlightId() {
-        return flightId;
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public void setFlightId(Long flightId) {
-        this.flightId = flightId;
+    public Flight getFlight() {
+        return flight;
+    }
+
+    public void setFlight(Flight flight) {
+        this.flight = flight;
     }
 
     public String getName() {
@@ -66,13 +72,9 @@ public class Ticket implements Serializable {
 
     @Override
     public String toString() {
-        return "Ticket{" +
-                "id=" + id +
-                ", flightId=" + flightId +
-                ", name='" + name + '\'' +
-                ", surname='" + surname + '\'' +
-                ", passportNumber='" + passportNumber + '\'' +
-                ", type='" + type + '\'' +
-                '}';
+        return flight +
+                ", name: " + name +
+                ", surname: " + surname +
+                ", passportNumber: " + passportNumber;
     }
 }
